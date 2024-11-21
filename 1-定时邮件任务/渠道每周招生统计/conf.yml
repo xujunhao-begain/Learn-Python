@@ -1,0 +1,8 @@
+sql: 渠道每周招生统计.sql
+file: data/渠道每日招生统计.xlsx
+
+email:
+  subject: 渠道每日招生统计
+  content: 渠道每日招生统计
+  receiver:
+  cc:
