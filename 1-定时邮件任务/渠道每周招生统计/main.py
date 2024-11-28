@@ -3,48 +3,46 @@ import sys
 import yaml
 import pandas as pd
 
-#os.environ['myconf'] = "/Users/xujunhao/PycharmProjects/my_daily_work/my_packages/"
+#os.environ['myconf'] = "/Users/xujunhao/PycharmProjects/Learn-Python/my_packages"
 sys.path.append(os.getenv('myconf'))
-from conn_db import conn_db
-from dd_robot import dd_robot
-from feishu_robot import feishu_robot
 import auto_email
 
-def fetch_raw(conf):
+with open("conf.yml", 'r') as f:
+    config = yaml.safe_load(f)
 
-    sql = conf['sql']
-    file = conf['file']
+# SQL 查询和输出文件
+sql_file = config['sql']
+excel_file = config['file']
 
-    sql = open(sql, 'r', encoding = 'UTF-8').read()
-    val, col = conn_db(sql)
-    data = pd.DataFrame(val, columns = col)
+# 邮件配置
+Subject = config['email']['subject']
+Content = config['email']['content']
+Attachment = config['file']
+Receiver = config['email']['receiver']
+Cc = config['email']['cc']
 
-    if not os.path.exists('data'):
-        os.mkdir('data')
-
-    data.to_excel(file, index=False)
-
-def send_data(conf):
-
-    email_conf = conf['email']
-
-    Subject  = email_conf['subject']
-    Content  = email_conf.get('content')
-    Attachment = conf['file']
-    Recever  = email_conf['receiver']
-    Cc   = email_conf.get('cc')
-
-    auto_email.email_send(Subject, Content, Attachment, Recever, Cc)
-
-with open('conf.yml', 'r', encoding ='utf-8') as f:
-    conf = yaml.full_load(f)
 
 try:
-    fetch_raw(conf)
-    send_data(conf)
+    # 连接 Hive
+    hive_connection = auto_email.connect_to_hive()
+    if hive_connection is None:
+        raise Exception("无法连接到 Hive 数据库")
+
+    # 执行 SQL
+    with open(sql_file, 'r', encoding='UTF-8') as f:
+         query = f.read()
+
+    df_result = auto_email.execute_hive_query(hive_connection, query)
+    if df_result is None:
+        raise Exception("无法执行 Hive 查询")
+
+    # 写入 Excel
+    if not os.path.exists('data'):
+        os.mkdir('data')
+    auto_email.write_to_excel(df_result, excel_file)
+
+    # 发送邮件
+    auto_email.email_send(Subject, Content, Attachment, Receiver, Cc=None, Dt=None)
+
 except Exception as e:
-    print(e)
-    robot_conf = conf['feishu_robot']
-    message    = '{}-发送失败'.format(conf['sql'].split('.')[0])
-    feishu_robot(robot_conf['webhook'], message, 'text')
-    # raise
+    print(f"程序执行出错: {e}")

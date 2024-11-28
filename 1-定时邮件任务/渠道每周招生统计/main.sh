@@ -1,6 +1,6 @@
 #! /bin/sh
 
-export PATH="/home/kunpeng/miniconda3/bin/:$PATH"
-export myconf='/home/kunpeng/hetao_new/my_packages'
+export PATH="/root/miniconda3/bin:$PATH"
+export myconf='/root/Learn-Python/my_packages'
 
 python main.py
