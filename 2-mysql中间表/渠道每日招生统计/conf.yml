@@ -1,0 +1,32 @@
+table: mysql.channel_enroll_statistic
+comment: 渠道每日招生统计用于飞书看板
+sql: channel_enroll_statistic.sql
+file: data/channel_enroll_statistic.feather
+col_comment:
+    user_group: varchar(100);用户群体
+    sku: varchar(100);SKU
+    target_mkt_group: varchar(100);业务核算组
+    channel_subtype_name: varchar(100);渠道子类型
+    target_channel_type: varchar(100);定标渠道类型
+    parent_operation_type_name: varchar(100);业务线
+    class_tag: varchar(100);班型
+    package_grade: varchar(100);年级
+    pay_date: varchar(100);支付日期
+    is_target: varchar(100);是否标内学期
+    operation_group: varchar(100);运营团队
+    counselor_group_city: varchar(100);基地
+    term_id: int(10);学期id
+    term_enrollment_count: int(10);学期流量池最大承接人数
+    stock_id: int(10);库存id
+    total_stock: int(10);总库存
+    stock_status: varchar(100);库存id状态
+    term: varchar(100);学期期次
+    term_start_date: varchar(100);学期开课日期
+    term_renewal_end_date : varchar(100);学期结束续报日期
+    is_term_end_renewal: varchar(100);学期是否结束续报
+    user_cnt: int(10);进班人数
+    order_cnt: int(10);订单数
+    lastday_renewal_cnt: int(10);末日续报用户数
+    renewal_user_cnt: int(10);累计续报用户数
+    modify_date: varchar(100);更新日期
+table_index: '(class_tag)'
