@@ -4,5 +4,5 @@ file: data/渠道每日招生统计.xlsx
 email:
   subject: 渠道每日招生统计
   content: 渠道每日招生统计
-  receiver: xujunhao2@hetao101.com
+  receiver: youremail@example.com
   cc:
