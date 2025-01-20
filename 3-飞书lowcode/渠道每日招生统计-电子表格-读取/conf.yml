@@ -1,0 +1,12 @@
+sql: channel_enroll_statistic.sql
+file: data/channel_enroll_statistic.feather
+
+#自定义机器人
+feishu_robot:
+    webhook: "https://open.feishu.cn/open-apis/bot/v2/hook/b581dc4a-dc29-4837-83c4-fc07a65a009e"
+
+# 测试应用
+feishu_app:
+    app_id : cli_a702136caa15d013
+    app_secret : 2MEzcDtFpaTz85wGUtyKHe7coTZTcF3u
+
