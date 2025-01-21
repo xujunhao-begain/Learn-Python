@@ -4,6 +4,7 @@ import yaml
 import json
 import lark_oapi as lark
 from lark_oapi.api.bitable.v1 import *
+import pandas as pd
 
 ##--自定义机器人--##
 def send_feishu_message(url, text):
@@ -52,7 +53,7 @@ def create_client(app_id, app_secret):
 
     return client
 
-##--多维表格--##
+
 # 查询表中所有记录的 ID（支持分页）
 def query_all_record_ids(client, app_token, table_id):
     record_ids = []
@@ -94,7 +95,7 @@ def query_all_record_ids(client, app_token, table_id):
 
     return record_ids
 
-##--多维表格--##
+
 # 删除表中所有记录（分批处理，每次最多 500 条）
 def delete_records(client, app_token, table_id, record_ids):
     batch_size = 500
@@ -141,7 +142,7 @@ def delete_records(client, app_token, table_id, record_ids):
 #                 f"Failed to insert records, code: {response.code}, msg: {response.msg}, log_id: {response.get_log_id()}, resp: \n{json.dumps(json.loads(response.raw.content), indent=4, ensure_ascii=False)}")
 #         else:
 #             lark.logger.info(f"Inserted {len(batch)} records successfully.")
-##--多维表格--##
+
 #插入多条记录
 def insert_records(client, app_token, table_id, data):
     try:
@@ -171,3 +172,86 @@ def insert_records(client, app_token, table_id, data):
     except Exception as e:
         lark.logger.error(f"An error occurred during record insertion: {e}")
         raise  # 重新抛出异常供外部捕获
+
+#获取数据
+# def get_records(client, app_token, table_id):
+#
+#     # 构造请求对象
+#     request: SearchAppTableRecordRequest = SearchAppTableRecordRequest.builder() \
+#         .app_token(app_token) \
+#         .table_id(table_id) \
+#         .page_size(500) \
+#         .request_body(SearchAppTableRecordRequestBody.builder()
+#                       .automatic_fields(True)
+#                       .build()) \
+#         .build()
+#
+#     # 发起请求
+#     response: SearchAppTableRecordResponse = client.bitable.v1.app_table_record.search(request)
+#
+#     # 处理成功响应
+#     records = response.data.items
+#
+#     # 提取数据并转换为数据框
+#     data = []
+#
+#     for record in records:
+#         # 提取每一列的值
+#         record_data = {}
+#         for field, value in record.fields.items():
+#             # 获取字段中的 'text' 值，若为空则使用空字符串
+#             record_data[field] = value[0].get('text', '') if value else ''
+#
+#         # 将每个记录的字段数据添加到 data 列表
+#         data.append(record_data)
+#
+#     # 转换为数据框
+#     df = pd.DataFrame(data)
+#
+#     return df
+
+#获取数据超过500条
+def get_records(client, app_token, table_id):
+    # 用于存储所有记录的数据
+    all_data = []
+
+    # 初始页码，默认第一页
+    page_token = ''
+    page_size = 500  # 每页500条记录
+
+    while True:
+        # 构造请求对象
+        request: SearchAppTableRecordRequest = SearchAppTableRecordRequest.builder() \
+            .app_token(app_token) \
+            .table_id(table_id) \
+            .page_size(page_size) \
+            .page_token(page_token) \
+            .request_body(SearchAppTableRecordRequestBody.builder()
+                          .automatic_fields(True)
+                          .build()) \
+            .build()
+
+        # 发起请求
+        response: SearchAppTableRecordResponse = client.bitable.v1.app_table_record.search(request)
+
+        # 处理成功响应
+        records = response.data.items
+
+        # 提取数据并添加到 all_data 列表
+        for record in records:
+            record_data = {}
+            for field, value in record.fields.items():
+                # 获取字段中的 'text' 值，若为空则使用空字符串
+                record_data[field] = value[0].get('text', '') if value else ''
+
+            all_data.append(record_data)
+
+        # 判断是否还有更多数据，获取下一页
+        page_token = response.data.page_token
+        if not page_token:
+            break  # 没有更多数据，跳出循环
+
+    # 将所有记录转换为数据框
+    df = pd.DataFrame(all_data)
+
+    return df
