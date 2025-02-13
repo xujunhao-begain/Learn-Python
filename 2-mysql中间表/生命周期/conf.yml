@@ -1,0 +1,21 @@
+table: mysql.ads_eda_ltv_course_type_hdf
+comment: 用户LTV计算
+sql: ads_eda_ltv_course_type_hdf.sql
+file: data/ads_eda_ltv_course_type_hdf.feather
+col_comment:
+    course_type_detail: varchar(100);课程类型细分
+    pay_date: varchar(100);支付日期
+    l1_business_line: varchar(100);来源l1业务线:取该年课订单对应的用户,这个用户的所有续报编程年课的L1订单,且L1订单的支付时间在该年课支付时间之前的最后一单
+    l1_sku: varchar(100);来源l1SKU:同上
+    l1_user_group: varchar(100);来源l1人群:同上
+    l1_goal_channel_type: varchar(100);来源l1渠道类型
+    l1_goal_operation_group: varchar(100);来源l1运营团队
+    l1_parents_city_level: varchar(100);来源l1城市等级
+    l1_pay_grade: varchar(100);来源l1年级
+    go_course_type_detail: varchar(100);续报课程类型细分
+    datedif: int(10);首个订单支付时间到续报订单支付时间差(天)
+    total_gmv: DECIMAL(20,6);续报订单总gmv
+    user_cnt: int(10);人数
+    avg_gmv: DECIMAL(20,6);人均gmv
+    dt: varchar(100);分区字段
+table_index: '(course_type_detail)'

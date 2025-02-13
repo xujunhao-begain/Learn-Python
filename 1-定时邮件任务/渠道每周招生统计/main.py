@@ -3,7 +3,7 @@ import sys
 import yaml
 import pandas as pd
 
-#os.environ['myconf'] = "/Users/xujunhao/PycharmProjects/Learn-Python/my_packages"
+os.environ['myconf'] = "/Users/xujunhao/PycharmProjects/Learn-Python/my_packages"
 sys.path.append(os.getenv('myconf'))
 import auto_email
 
